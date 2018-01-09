@@ -7,9 +7,9 @@
 // +----------------------------------------------------------------------
 module.exports = class extends think.cmswing.center {
   /**
-     * index action
-     * @return {Promise} []
-     */
+   * index action
+   * @return {Promise} []
+   */
   async indexAction() {
     // let p = this.get();
     // return this.body="dfdfdfd";
@@ -18,22 +18,26 @@ module.exports = class extends think.cmswing.center {
 
     // console.log(this.config("view").nunjucks.extname);
     // auto render template file index_index.html
-    this.meta_title = '首页';// 标题1
-    this.keywords = this.config('setup.WEB_SITE_KEYWORD') ? this.config('setup.WEB_SITE_KEYWORD') : '';// seo关键词
-    this.description = this.config('setup.WEB_SITE_DESCRIPTION') ? this.config('setup.WEB_SITE_DESCRIPTION') : '';// seo描述
+    this.meta_title = '首页'; // 标题1
+    this.keywords = this.config('setup.WEB_SITE_KEYWORD')
+      ? this.config('setup.WEB_SITE_KEYWORD')
+      : ''; // seo关键词
+    this.description = this.config('setup.WEB_SITE_DESCRIPTION')
+      ? this.config('setup.WEB_SITE_DESCRIPTION')
+      : ''; // seo描述
     this.active = ['/', '/index', '/index.html'];
     // 首页内容钩子
-    await this.hook('hometitle');
-    await this.hook('homelist');
-    // 右边的钩子
-    await this.hook('homeright');
-    await this.hook('homeright');
+    // await this.hook('hometitle');
+    // await this.hook('homelist');
+    // // 右边的钩子
+    // await this.hook('homeright');
+    // await this.hook('homeright');
     // debugger;
     // 判断浏览客户端
     if (this.isMobile) {
       const map = {
-        'pid': 0,
-        'status': 1
+        pid: 0,
+        status: 1
       };
       // 排序
       const o = {};
@@ -55,7 +59,11 @@ module.exports = class extends think.cmswing.center {
       }
 
       this.assign('order', order);
-      const data = await this.model('document').where(map).page(this.get('page'), 10).order(o).countSelect();
+      const data = await this.model('document')
+        .where(map)
+        .page(this.get('page'), 10)
+        .order(o)
+        .countSelect();
       this.assign('list', data);
       // console.log(data);
       if (this.isAjax('get')) {

@@ -1,13 +1,6 @@
-{% extends "./inc_base.html" %}
-{%if category.pid !=0%}
-{%column data="column",pid=category.pid%}
-{%else%}
-{%column data="column",cid=category.id%}
-{%endif%}
-{% block style %}
-<link rel="stylesheet" href="/static/assets/plugins/share/css/share.min.css">
-{% endblock %}
-{% block content %}
+{% extends "./inc_base.html" %} {%if category.pid !=0%} {%column data="column",pid=category.pid%} {%else%} {%column data="column",cid=category.id%}
+{%endif%} {% block style %}
+<link rel="stylesheet" href="/static/assets/plugins/share/css/share.min.css"> {% endblock %} {% block content %}
 <!--
 PAGE HEADER
 
@@ -32,22 +25,32 @@ CLASSES:
         {%endif%}
         <!-- breadcrumbs -->
         <ol class="breadcrumb {%if column|length==0%} breadcrumb-inverse {%endif%}">
-            <li><a href="/">首页</a></li>
+            <li>
+                <a href="/">首页</a>
+            </li>
             {%for val in breadcrumb %}
-            <li><a href="{{val.url}}">{{val.title}}</a></li>
-            {%if column|length==0%} <li>{{info.title}} </li>{%endif%}
-            {% endfor %}
-        </ol><!-- /breadcrumbs -->
+            <li>
+                <a href="{{val.url}}">{{val.title}}</a>
+            </li>
+            {%if column|length==0%}
+            <li>{{info.title}} </li>{%endif%} {% endfor %}
+        </ol>
+        <!-- /breadcrumbs -->
 
         <!-- page tabs -->
         {%if column|length >0%}
         <ul class="page-header-tabs list-inline">
-            <li {%if breadcrumb[0].id == category.id %}class="active"{%endif%}><a href="{{breadcrumb[0].url}}">全部</a></li>
+            <li {%if breadcrumb[0].id==category.id %}class="active" {%endif%}>
+                <a href="{{breadcrumb[0].url}}">全部</a>
+            </li>
             {%for val in column%}
-            <li  {%if val.id == category.id %}class="active"{%endif%}><a href="{{val.url}}">{{val.name}}</a></li>
+            <li {%if val.id==category.id %}class="active" {%endif%}>
+                <a href="{{val.url}}">{{val.name}}</a>
+            </li>
             {%endfor%}
         </ul>
-        {%endif%}<!-- /page tabs -->
+        {%endif%}
+        <!-- /page tabs -->
     </div>
 </section>
 <!-- /PAGE HEADER -->
@@ -79,10 +82,10 @@ CLASSES:
 
                             </li>
                             <!--<li>-->
-                                <!--<a href="#comments">-->
-                                    <!--<i class="fa fa-comment-o"></i>-->
-                                    <!--<span class="font-lato"><span id="changyan_count_unit">0</span></span>-->
-                                <!--</a>-->
+                            <!--<a href="#comments">-->
+                            <!--<i class="fa fa-comment-o"></i>-->
+                            <!--<span class="font-lato"><span id="changyan_count_unit">0</span></span>-->
+                            <!--</a>-->
                             <!--</li>-->
                             <li>
                                 <i class="fa fa-folder-open-o"></i>
@@ -123,46 +126,33 @@ CLASSES:
                         <!-- /OWL SLIDER -->
 
                         <!-- IMAGE -->
-{#
-                        {% if info.cover_id>0 %}
+                        {# {% if info.cover_id>0 %}
                         <figure class="margin-bottom-20">
                             <img class="img-responsive" src="{{info.cover_id|get_pic('m=2,w=847')}}" alt="{{info.title}}">
                         </figure>
-                        {% endif %}
-#}
+                        {% endif %} #}
                         <!-- /IMAGE -->
 
                         <!--内容钩子加载-->
-                       {{content(pagehook)}}
+                        {{content(pagehook)}}
                         <!--/内容钩子加载结束-->
 
                         <!-- article content -->
 
                     </div>
-                    {% rkeywords data ="tags",type="0",mod_id=info.model_id,id=info.id%}
-                    {%if tags%}
                     <div class="panel-footer panel-footer-transparent">
-                        <!-- TAGS -->
-
-                        {%set color = ["btn-primary","btn-success","btn-info","btn-warning","btn-danger"]%}
-                        {%for k in tags%}
-                        <a href="{{k.url}}" class="btn {{color|random}} btn-xs relative">
-                            {{k.keyname}}
-                        </a>
-                        {%endfor%}
-                        <!-- /TAGS -->
-                    </div>
-                    {%endif%}
-                    <div class="panel-footer panel-footer-transparent">
-                    <div class="social-share" data-disabled="google,twitter,facebook,diandian" ></div>
+                        <div class="social-share" data-disabled="google,twitter,facebook,diandian"></div>
                     </div>
                     <div class="panel-footer">
                         <ul class="pager nomargin">
                             {%if previous.id%}
-                            <li class="previous"><a class="noborder" href="{{previous.name|get_url(previous.id)}}" title="{{previous.title}}">&larr; 上一篇:{{previous.title|block(20)}}</a></li>
-                            {%endif%}
-                            {%if next.id%}
-                            <li class="next"><a class="noborder" href="{{next.name|get_url(next.id)}}" title="{{next.title}}">下一篇:{{next.title|block(20)}} &rarr;</a></li>
+                            <li class="previous">
+                                <a class="noborder" href="{{previous.name|get_url(previous.id)}}" title="{{previous.title}}">&larr; 上一篇:{{previous.title|block(20)}}</a>
+                            </li>
+                            {%endif%} {%if next.id%}
+                            <li class="next">
+                                <a class="noborder" href="{{next.name|get_url(next.id)}}" title="{{next.title}}">下一篇:{{next.title|block(20)}} &rarr;</a>
+                            </li>
                             {%endif%}
                         </ul>
                     </div>
@@ -180,8 +170,5 @@ CLASSES:
     </div>
 </section>
 <!-- / -->
-{% endblock %}
-
-{% block script %}
-<script src="/static/assets/plugins/share/js/social-share.min.js"></script>
-{% endblock %}
+{% endblock %} {% block script %}
+<script src="/static/assets/plugins/share/js/social-share.min.js"></script> {% endblock %}

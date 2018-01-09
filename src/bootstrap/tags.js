@@ -34,7 +34,10 @@ global.mytags = function() {
           val = val.split('=');
           // console.log(val[1].indexOf("["));
           if (val[1].indexOf('[') === 0) {
-            val[1] = val[1].replace('[', '').replace(']', '').split('-');
+            val[1] = val[1]
+              .replace('[', '')
+              .replace(']', '')
+              .split('-');
             // console.log(val[1]);
           }
           maps[val[0]] = val[1];
@@ -48,7 +51,9 @@ global.mytags = function() {
           model_id = maps.mid;
           delete maps.mid;
         }
-        const model = await think.model('cmswing/model').get_table_name(model_id);
+        const model = await think
+          .model('cmswing/model')
+          .get_table_name(model_id);
         // console.log(model);
         // limit
         let offset, length;
@@ -74,7 +79,12 @@ global.mytags = function() {
         }
         // console.log(maps);
         // console.log(offset);
-        const data = await think.model(model).where(where).limit(offset, length).order(order).select();
+        const data = await think
+          .model(model)
+          .where(where)
+          .limit(offset, length)
+          .order(order)
+          .select();
         // console.log(data);
         context.ctx[arg] = data;
       }
@@ -115,7 +125,10 @@ global.column = function() {
     const column = await think.model('cmswing/category').get_all_category();
     if (args.isnum == 1) {
       for (const v of column) {
-        v.doc_num = await think.model('document').where({category_id: v.id, status: ['>', 0]}).count('id');
+        v.doc_num = await think
+          .model('document')
+          .where({ category_id: v.id, status: ['>', 0] })
+          .count('id');
       }
     }
     // console.log(column);
@@ -141,7 +154,7 @@ global.column = function() {
       arr = think._.filter(column, map);
       if (isindex) {
         for (const v of arr) {
-          v.url = (v.url).replace(/channel/, 'column');
+          v.url = v.url.replace(/channel/, 'column');
         }
       }
     }
@@ -187,7 +200,9 @@ global.groups = function() {
   };
   this.run = async function(context, args, callback) {
     const data = think.isEmpty(args.data) ? 'data' : args.data;
-    context.ctx[data] = await think.model('cmswing/category').get_groups(args.cid);
+    context.ctx[data] = await think
+      .model('cmswing/category')
+      .get_groups(args.cid);
     return callback(null, '');
   };
 };
@@ -222,7 +237,7 @@ global.topic = function() {
   };
   this.run = async function(context, args, callback) {
     // console.log(args);
-    let where = {'status': 1, 'pid': 0};
+    let where = { status: 1, pid: 0 };
     const data = think.isEmpty(args.data) ? 'data' : args.data;
     const limit = think.isEmpty(args.limit) ? '10' : args.limit;
     // 获取当前分类的所有子栏目
@@ -231,7 +246,9 @@ global.topic = function() {
         const cids = `${args.cid}`;
         let cidarr = [];
         for (const v of cids.split(',')) {
-          const subcate = await think.model('cmswing/category').get_sub_category(v);
+          const subcate = await think
+            .model('cmswing/category')
+            .get_sub_category(v);
           cidarr = cidarr.concat(subcate);
           cidarr.push(Number(v));
         }
@@ -241,13 +258,15 @@ global.topic = function() {
     }
 
     // subcate.push(cate.id);
-    const cid = think.isEmpty(args.cid) ? false : {'category_id': ['IN', args.cid]};
+    const cid = think.isEmpty(args.cid)
+      ? false
+      : { category_id: ['IN', args.cid] };
     if (cid) {
       where = think.extend({}, where, cid);
     }
     // 分组
     if (!think.isEmpty(args.group)) {
-      where = think.extend(where, {'group_id': ['IN', args.group]});
+      where = think.extend(where, { group_id: ['IN', args.group] });
     }
     let type = 'create_time DESC';
     if (!think.isEmpty(args.type)) {
@@ -259,7 +278,7 @@ global.topic = function() {
     }
     // 推荐
     if (!think.isEmpty(args.position)) {
-      where = think.extend(where, {position: args.position});
+      where = think.extend(where, { position: args.position });
     }
     // 条件
     if (!think.isEmpty(args.where)) {
@@ -268,9 +287,9 @@ global.topic = function() {
     // 是否缩略图
     if (!think.isEmpty(args.ispic)) {
       if (args.ispic == 1) {
-        where = think.extend(where, {cover_id: ['>', 0]});
+        where = think.extend(where, { cover_id: ['>', 0] });
       } else if (args.ispic == 2) {
-        where = think.extend(where, {cover_id: 0});
+        where = think.extend(where, { cover_id: 0 });
       }
     }
 
@@ -292,11 +311,14 @@ global.topic = function() {
         join: 'left', // 有 left,right,inner 3 个值
         as: 't',
         on: ['id', 'tid']
-
       });
     }
 
-    let topic = await model.where(where).limit(limit).order(type).select();
+    let topic = await model
+      .where(where)
+      .limit(limit)
+      .order(type)
+      .select();
 
     // 副表数据
     if (args.isstu == 1) {
@@ -304,7 +326,9 @@ global.topic = function() {
       let stuwhere = {};
 
       for (const v of topic) {
-        const table = await think.model('cmswing/model').get_table_name(v.model_id);
+        const table = await think
+          .model('cmswing/model')
+          .get_table_name(v.model_id);
         const details = await think.model(table).find(v.id);
         topicarr.push(think.extend({}, v, details));
       }
@@ -316,94 +340,6 @@ global.topic = function() {
     }
     // console.log(topic)
     context.ctx[data] = topic;
-    return callback(null, '');
-  };
-};
-
-/**
- *获取话题标签
- * {% keywords data ="kws"%}
- *
- * data:接受返回数据的变量名称，例: data = "data"
- * limit: 设置查询结果的条数，例: limit="10",limit="3,10"
- * type: hot
- * cache {Number} 缓存有效时间，单位为秒,建议1000秒
- */
-
-global.keywords = function() {
-  this.tags = ['keywords'];
-  this.parse = function(parser, nodes, lexer) {
-    var tok = parser.nextToken();
-    var args = parser.parseSignature(null, true);
-    parser.advanceAfterBlockEnd(tok.value);
-    return new nodes.CallExtensionAsync(this, 'run', args);
-  };
-  this.run = async function(context, args, callback) {
-    const data = think.isEmpty(args.data) ? 'data' : args.data;
-    const where = {};
-    const limit = think.isEmpty(args.limit) ? '10' : args.limit;
-    const mod = think.isEmpty(args.mod) ? '' : ',' + args.mod;
-    let type = 'discuss_count_update DESC';
-    if (!think.isEmpty(args.type)) {
-      if (args.type == 'hot') {
-        type = 'videonum DESC';
-      }
-    }
-    const model = think.model('keyword');
-    const cache = think.isEmpty(args.cache) ? false : Number(args.cache) * 1000;
-    // 缓存
-    if (cache) {
-      model.cache(cache);
-    }
-    const keywrod = await model.where(where).limit(limit).order(type).select();
-    // console.log(channel);
-    for (const k of keywrod) {
-      k.url = `/t/${k.keyname}${mod}`;
-    }
-    context.ctx[data] = keywrod;
-    return callback(null, '');
-  };
-};
-/**
- *获取相关话题
- * {% rkeywords data ="topic",type="0",mod_id="8",id="1"%}
- *
- * data:接受返回数据的变量名称，例: data = "data"
- * limit: 设置查询结果的条数，例: limit="10",limit="3,10"
- * type: 0系统模型，1,独立模型
- * mod_id:模型id,
- * id:文章的的id,
- */
-global.rkeywords = function() {
-  this.tags = ['rkeywords'];
-  this.parse = function(parser, nodes, lexer) {
-    var tok = parser.nextToken();
-    var args = parser.parseSignature(null, true);
-    parser.advanceAfterBlockEnd(tok.value);
-    return new nodes.CallExtensionAsync(this, 'run', args);
-  };
-  this.run = async function(context, args, callback) {
-    // console.log(args);
-    const data = think.isEmpty(args.data) ? 'data' : args.data;
-    const where = {};
-    const limit = think.isEmpty(args.limit) ? '5' : args.limit;
-    const type = think.isEmpty(args.type) ? '0' : args.type;
-    const mod_id = think.isEmpty(args.mod_id) ? '1' : args.mod_id;
-    const id = think.isEmpty(args.id) ? '0' : args.id;
-    where.docid = id;
-    where.mod_type = type;
-    where.mod_id = mod_id;
-    let keyword;
-    const topicid = await think.model('keyword_data').where(where).getField('tagid');
-    if (!think.isEmpty(topicid)) {
-      keyword = await think.model('keyword').where({id: ['IN', topicid]}).limit(limit).select();
-
-      for (const k of keyword) {
-        k.url = `/t/${k.keyname},${mod_id}`;
-      }
-    }
-    // console.log(keyword);
-    context.ctx[data] = keyword;
     return callback(null, '');
   };
 };
@@ -436,7 +372,9 @@ global.model = function() {
     const data = think.isEmpty(args.data) ? 'data' : args.data;
     const table = think.isEmpty(args.table) ? '5' : args.table;
     const join = think.isEmpty(args.join) ? false : JSON.parse(args.join);
-    const fieldReverse = think.isEmpty(args.fieldReverse) ? false : args.fieldReverse;
+    const fieldReverse = think.isEmpty(args.fieldReverse)
+      ? false
+      : args.fieldReverse;
     const alias = think.isEmpty(args.alias) ? false : args.alias;
     const limit = think.isEmpty(args.limit) ? false : args.limit;
     const where = think.isEmpty(args.where) ? false : JSON.parse(args.where);
